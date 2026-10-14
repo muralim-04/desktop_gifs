@@ -22,19 +22,19 @@
   "permissions": ["scripting", "storage"],
   "host_permissions": ["https://tenor.com/*", "https://www.youtube.com/*"],
   "background": {
-    "service_worker": "src/sw.js",
-    "scripts": ["src/sw.js"]
+    "service_worker": "dist/sw.js",
+    "scripts": ["dist/sw.js"]
   },
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
-      "js": ["src/main.js"],
+      "js": ["dist/main.js"],
       "world": "MAIN",
       "run_at": "document_start"
     },
     {
       "matches": ["https://www.youtube.com/*"],
-      "js": ["src/content.js"],
+      "js": ["dist/content.js"],
       "css": ["src/content.css"],
       "run_at": "document_start"
     }

@@ -139,11 +139,11 @@ When you pick a GIF, the content script attaches it to the comment box. When you
 
 | File | Runs in | Job |
 | --- | --- | --- |
-| `src/content.js`, `src/content.css` | YouTube page, isolated world | Adds the GIF button and the picker |
-| `src/main.js` | YouTube page, main world | Rewrites the comment request so it carries the GIF |
-| `src/sw.js` | Service worker (background script in Firefox) | Fetches G-rated search results from Tenor; on install, adds the two scripts above to YouTube tabs that are already open |
+| `src/content.ts`, `src/content.css` | YouTube page, isolated world | Adds the GIF button and the picker |
+| `src/main.ts` | YouTube page, main world | Rewrites the comment request so it carries the GIF |
+| `src/sw.ts` | Service worker (background script in Firefox) | Fetches G-rated search results from Tenor; on install, adds the two scripts above to YouTube tabs that are already open |
 
-There is no build step and there are no dependencies: the `extension` folder is the extension. `python3 tools/package.py` writes the two release ZIPs, which are that folder with the other browser's background key taken out of the manifest.
+The project is TypeScript-first. `npm run build` compiles the source files into `extension/dist`, and the manifest loads those generated files. `python3 tools/package.py` writes the release ZIPs from the built extension.
 
 `node --test tests/main.test.cjs tests/sw.test.cjs` (Node.js 22 or newer) checks how comment requests are rewritten, how YouTube's answers are read and retried, and the Tenor rating check, against simulated responses. `python3 tests/picker.browser.py` drives the real content script in Chromium and Firefox on a local page that imitates YouTube's comment boxes and a notification reply dialog; it needs Python's `playwright` package and its browsers (`python3 -m playwright install chromium firefox`). Neither posts anything to YouTube.
 

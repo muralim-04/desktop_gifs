@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { test } = require('node:test');
 
-const source = fs.readFileSync(path.join(__dirname, '../extension/src/sw.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '../extension/dist/sw.js'), 'utf8');
 const id = '7993045760456588950';
 const post = (rating = 'G') => ({
   id, content_rating: rating, content_description: 'Selected GIF',
@@ -13,10 +13,17 @@ const post = (rating = 'G') => ({
 
 function worker(results, apiStatus = 200) {
   const calls = [];
+  let onMessage;
   const settings = Buffer.from(JSON.stringify({ API_V2_KEY: 'fixture-key', API_V2_CLIENT_KEY: 'fixture-client' })).toString('base64');
   const html = `<script id="store-cache" type="text/x-cache">{}</script><script id="data" type="text/x-cache">${settings}</script>`;
   const context = vm.createContext({
-    chrome: { runtime: { onInstalled: { addListener() {} }, onMessage: { addListener() {} } } },
+    chrome: {
+      runtime: {
+        id: 'fixture-extension',
+        onInstalled: { addListener() {} },
+        onMessage: { addListener(listener) { onMessage = listener; } },
+      },
+    },
     URL, URLSearchParams, atob, AbortSignal,
     fetch: async (url, init) => {
       calls.push({ url, init });
@@ -25,7 +32,17 @@ function worker(results, apiStatus = 200) {
     },
   });
   vm.runInContext(source, context);
-  return { check: () => context.handle({ type: 'check', id }), calls };
+  return {
+    check: () => new Promise((resolve, reject) => {
+      const listenerWillRespond = onMessage(
+        { type: 'check', id },
+        { id: 'fixture-extension' },
+        (response) => response.ok ? resolve(response.gifs) : reject(new Error(response.error)),
+      );
+      assert.equal(listenerWillRespond, true);
+    }),
+    calls,
+  };
 }
 
 test('selected G-rated IDs get a verified result even when a favorite has no rating metadata', async () => {

@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { test } = require('node:test');
 
-const source = fs.readFileSync(process.env.GIF_HOOK_SOURCE || path.join(__dirname, '../extension/src/main.js'), 'utf8');
+const source = fs.readFileSync(process.env.GIF_HOOK_SOURCE || path.join(__dirname, '../extension/dist/main.js'), 'utf8');
 const origin = 'https://www.youtube.com';
 const create = `${origin}/youtubei/v1/comment/create_comment?prettyPrint=false`;
 const id = '13723327785995541767';

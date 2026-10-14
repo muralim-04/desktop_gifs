@@ -39,7 +39,7 @@ def build(name, strip):
     with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
         z.writestr('manifest.json', json.dumps(manifest, indent=2) + '\n')
         for path in sorted(SRC.rglob('*')):
-            if path.is_file() and path.name != 'manifest.json':
+            if path.is_file() and path.name != 'manifest.json' and path.suffix not in ('.ts', '.map'):
                 z.write(path, path.relative_to(SRC).as_posix())
     return out, manifest['version']
 

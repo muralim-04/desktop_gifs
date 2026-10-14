@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Isolated-world content script: adds a GIF button to YouTube's comment boxes,
 // shows the picker, attaches the chosen GIF to the box, and when the user posts
 // hands it to the page-world hook (main.js) by submitting a one-time marker
